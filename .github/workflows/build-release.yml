@@ -1,0 +1,124 @@
+name: 'Build - Release'
+
+on: 
+  push:  
+    paths-ignore: [ '**.md' ]
+  pull_request:
+    paths-ignore: [ '**.md' ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      matrix:
+        os: [ubuntu, macos, windows]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Setup GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: '5.x'
+
+    - name: Execute GitVersion
+      uses: gittools/actions/gitversion/execute@v0.9.7
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:        
+        dotnet-version: | 
+          3.1.x
+          6.0.x
+
+    - name: Test solution
+      run: dotnet test SharkE.Chip8.sln --configuration Release
+      working-directory: ./src
+
+    - name: Build SharkE.Chip8.MonoGame
+      env:
+        Version: ${{ env.GitVersion_SemVer }}
+      run: dotnet build SharkE.Chip8.MonoGame/SharkE.Chip8.MonoGame.csproj --configuration Release --output ./SharkE.Chip8.MonoGame-${{ matrix.os }}
+      working-directory: ./src      
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: SharkE.Chip8.MonoGame-${{ matrix.os }}
+        path: ./src/SharkE.Chip8.MonoGame-${{ matrix.os }}      
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=version::$(echo ${{ github.ref }} | cut -d / -f 3)
+
+    - name: Create release
+      uses: actions/create-release@latest
+      id: create_release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ steps.get_version.outputs.version }}
+        draft: true
+        prerelease: false
+
+    - name: Output Release URL File
+      run: echo "${{ steps.create_release.outputs.upload_url }}" > release_url.txt
+
+    - name: Save Release URL File for publish
+      uses: actions/upload-artifact@v1
+      with:
+        name: release_url
+        path: release_url.txt
+    
+  publish:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu, macos, windows]
+
+    steps:
+    - name: Load Release URL File from release job
+      uses: actions/download-artifact@v1
+      with:
+        name: release_url
+
+    - name: Get Release File Name & Upload URL
+      id: get_release_info
+      run: |
+        value=`cat release_url/release_url.txt`
+        echo ::set-output name=upload_url::$value
+      env:
+        TAG_REF_NAME: ${{ github.ref }}
+        REPOSITORY_NAME: ${{ github.repository }}
+
+    - name: Download artifact
+      uses: actions/download-artifact@v1
+      with:
+        name: SharkE.Chip8.MonoGame-${{ matrix.os }}
+        path: ./SharkE.Chip8.MonoGame-${{ matrix.os }}
+
+    - name: Zip artifact
+      run: zip -r SharkE.Chip8.MonoGame-${{ matrix.os }}.zip .
+      working-directory: ./SharkE.Chip8.MonoGame-${{ matrix.os }}
+
+    - name: Upload release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+        asset_path: ./SharkE.Chip8.MonoGame-${{ matrix.os }}/SharkE.Chip8.MonoGame-${{ matrix.os }}.zip
+        asset_name: SharkE.Chip8.MonoGame-${{ matrix.os }}.zip
+        asset_content_type: application/zip

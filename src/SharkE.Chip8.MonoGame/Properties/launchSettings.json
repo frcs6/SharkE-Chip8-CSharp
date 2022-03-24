@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SharkE.Chip8": {
+      "commandName": "Project",
+      "commandLineArgs": "-r ../../../../../tests/test_opcode.ch8 -w"
+    }
+  }
+}

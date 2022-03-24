@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "SharkE.Chip8.MonoGame",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build",
+            "program": "${workspaceFolder}/src/SharkE.Chip8.MonoGame/bin/Debug/net6.0/SharkE.Chip8.MonoGame.exe",
+            "args": [
+                "-r ../../../../tests/test_opcode.ch8",
+                "-w"
+            ],
+            "cwd": "${workspaceFolder}/src/SharkE.Chip8.MonoGame",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }
+
+    ]
+}
