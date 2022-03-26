@@ -94,28 +94,6 @@ namespace SharkE.Chip8.MonoGame.Drivers
                     FillBuffer(_latestBuffer);
             }
 
-            if (IsKeyPressed(keyboardState, Keys.F7))
-            {
-                var videoConfig = VideoConfig;
-                videoConfig.RenderMode = RenderMode.Center;
-                VideoConfig = videoConfig;
-                ChangeGraphicConfig();
-            }
-            else if (IsKeyPressed(keyboardState, Keys.F8))
-            {
-                var videoConfig = VideoConfig;
-                videoConfig.RenderMode = RenderMode.Fill;
-                VideoConfig = videoConfig;
-                ChangeGraphicConfig();
-            }
-            else if (IsKeyPressed(keyboardState, Keys.F9))
-            {
-                var videoConfig = VideoConfig;
-                videoConfig.RenderMode = RenderMode.PixelPerfect;
-                VideoConfig = videoConfig;
-                ChangeGraphicConfig();
-            }
-
             if (IsKeyPressed(keyboardState, Keys.F10))
             {
                 var videoConfig = VideoConfig;
@@ -151,29 +129,16 @@ namespace SharkE.Chip8.MonoGame.Drivers
 
         private Rectangle GetDestinationRectangle()
         {
-            if (_textureBuffer == null || _videoConfig.RenderMode == RenderMode.Fill)
+            if (_textureBuffer == null)
                 return new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 
-            var zoomWidth = 0;
-            var zoomHeight = 0;
-
-            switch (_videoConfig.RenderMode)
-            {
-                case RenderMode.Center:
-                    zoomWidth = 1;
-                    zoomHeight = 1;
-                    break;
-                case RenderMode.PixelPerfect:
-                    zoomWidth = Math.Min(GraphicsDevice.Viewport.Width / _textureBuffer.Width, GraphicsDevice.Viewport.Height / _textureBuffer.Height);
-                    zoomHeight = zoomWidth;
-                    break;
-            }
+            var zoom = Math.Min(GraphicsDevice.Viewport.Width / _textureBuffer.Width, GraphicsDevice.Viewport.Height / _textureBuffer.Height);
 
             return new Rectangle(
-                (GraphicsDevice.Viewport.Width - zoomWidth * _textureBuffer.Width) / 2,
-                (GraphicsDevice.Viewport.Height - zoomHeight * _textureBuffer.Height) / 2,
-                zoomWidth * _textureBuffer.Width,
-                zoomHeight * _textureBuffer.Height);
+                (GraphicsDevice.Viewport.Width - zoom * _textureBuffer.Width) / 2,
+                (GraphicsDevice.Viewport.Height - zoom * _textureBuffer.Height) / 2,
+                zoom * _textureBuffer.Width,
+                zoom * _textureBuffer.Height);
         }
 
         private void ChangeGraphicConfig()
@@ -183,6 +148,8 @@ namespace SharkE.Chip8.MonoGame.Drivers
             _graphics.PreferMultiSampling = true;
             _graphics.IsFullScreen = VideoConfig.FullScreen;
             _graphics.ApplyChanges();
+
+            Game.IsMouseVisible = !VideoConfig.FullScreen;
         }
     }
 }

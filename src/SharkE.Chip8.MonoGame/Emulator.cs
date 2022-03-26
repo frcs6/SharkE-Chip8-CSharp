@@ -12,8 +12,8 @@ namespace SharkE.Chip8.MonoGame
 {
     internal class Emulator : Game
     {
-        private static readonly double CpuFrequency = 500;
-        private static readonly double TimerFrequency = 60;
+        private const double CpuFrequency = 500;
+        private const double TimerFrequency = 60;
 
         public Emulator(Arguments arguments)
         {
@@ -100,8 +100,7 @@ namespace SharkE.Chip8.MonoGame
             {
                 FullScreen = arguments.FullScreen,
                 PreferredBackBufferWidth = width,
-                PreferredBackBufferHeight = height,
-                RenderMode = arguments.RenderMode,
+                PreferredBackBufferHeight = height
             };
         }
     }

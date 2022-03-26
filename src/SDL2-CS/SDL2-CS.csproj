@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>SDL2</RootNamespace>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\extlibs\SDL2-CS\src\SDL2.cs" Link="SDL2.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\extdeps\SDL2-2.0.20-win32-x64\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
