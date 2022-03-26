@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 
-namespace SharkE.Chip8.MonoGame
+namespace SharkE.Chip8.Sdl2
 {
     internal class Arguments
     {

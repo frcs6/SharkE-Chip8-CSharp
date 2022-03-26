@@ -1,17 +1,17 @@
 # Shark Emulator (Chip8 - CSharp version)
 
-This is a Chip8 emulator implemented in C# using MonoGame render.
+This is a Chip8 emulator implemented in C# using MonoGame or Sdl2 render.
 
-*Workflow build Windows, Linux and MacOS executable, but only Windows is currently tested.*
+* MonoGame version: Workflow build Windows, Linux and MacOS executable, but only Windows is currently tested.*
+* Sdl2 version: Workflow build Windows x64 only for the moment*
 
 ## Command line arguments
 
 ```
 SharkE.Chip8 1.0.0
   -r, --rom                 Required. Rom file
-  -w, --window              Window mode
+  -f, --fullscreen          Full screen
   -s, --screenresolution    Screen resolution (ex: 800x600)
-  -m, --rendermode          Render mode (Center, PixelPerfect, Fill)
   -t, --theme               Theme index
   --help                    Display this help screen.
   --version                 Display version information.
@@ -22,9 +22,6 @@ SharkE.Chip8 1.0.0
 ```
 [ESC] : Exit game
 [F6] : Change palette
-[F7] : Switch to center mode
-[F8] : Switch to fill mode
-[F9] : Switch to pixel perfect mode
 [F10] : Switch full screen
 ```
 ## Keyboard
