@@ -152,6 +152,7 @@ jobs:
       working-directory: ./SharkE.Chip8.Sdl2-${{ matrix.os }}
 
     - name: Upload Sdl2 release
+      if: ${{ matrix.os == 'windows' }}
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
