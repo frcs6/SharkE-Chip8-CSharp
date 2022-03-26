@@ -2,8 +2,8 @@
 
 This is a Chip8 emulator implemented in C# using MonoGame or Sdl2 render.
 
-* MonoGame version: Workflow build Windows, Linux and MacOS executable, but only Windows is currently tested.*
-* Sdl2 version: Workflow build Windows x64 only for the moment*
+*MonoGame version: Workflow build Windows, Linux and MacOS executable, but only Windows is currently tested.*
+*Sdl2 version: Workflow build Windows x64 only for the moment*
 
 ## Command line arguments
 
