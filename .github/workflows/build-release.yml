@@ -129,6 +129,16 @@ jobs:
       run: zip -r SharkE.Chip8.MonoGame-${{ matrix.os }}.zip .
       working-directory: ./SharkE.Chip8.MonoGame-${{ matrix.os }}
 
+    - name: Upload MonoGame release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+        asset_path: ./SharkE.Chip8.MonoGame-${{ matrix.os }}/SharkE.Chip8.MonoGame-${{ matrix.os }}.zip
+        asset_name: SharkE.Chip8.MonoGame-${{ matrix.os }}.zip
+        asset_content_type: application/zip
+
     - name: Download Sdl2 artifact
       if: ${{ matrix.os == 'windows' }}
       uses: actions/download-artifact@v1
@@ -141,13 +151,12 @@ jobs:
       run: zip -r SharkE.Chip8.Sdl2-${{ matrix.os }}.zip .
       working-directory: ./SharkE.Chip8.Sdl2-${{ matrix.os }}
 
-
-    - name: Upload release
+    - name: Upload Sdl2 release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-        asset_path: ./SharkE.Chip8.MonoGame-${{ matrix.os }}/SharkE.Chip8.MonoGame-${{ matrix.os }}.zip
-        asset_name: SharkE.Chip8.MonoGame-${{ matrix.os }}.zip
+        asset_path: ./SharkE.Chip8.Sdl2-${{ matrix.os }}/SharkE.Chip8.Sdl2-${{ matrix.os }}.zip
+        asset_name: SharkE.Chip8.Sdl2-${{ matrix.os }}.zip
         asset_content_type: application/zip
