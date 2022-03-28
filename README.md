@@ -1,6 +1,6 @@
 # Shark Emulator (Chip8 - CSharp version)
 
-This is a Chip8 emulator implemented in C# using MonoGame or Sdl2 render.
+This is a Chip8 emulator implemented in C# using [MonoGame](https://github.com/MonoGame/MonoGame) or [SDL](https://www.libsdl.org/) render. [SDL](https://www.libsdl.org/) mapping use [SDL-CS](https://github.com/flibitijibibo/SDL2-CS).
 
 *MonoGame version: Workflow build Windows, Linux and MacOS executable, but only Windows is currently tested.*
 
@@ -41,7 +41,6 @@ Emulator mapping:
 | Z | X | C | V |
 
 ## Screenshots
-
 ![Invaders](./docs/Invaders.png)
 ![Invaders](./docs/Tetris.png)
 

@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\extlibs\SDL2-CS\LICENSE" Link="LICENSE-SDL-CS.txt" CopyToOutputDirectory="PreserveNewest" />
     <None Condition="'$(Platform)' == 'AnyCPU'" Include="..\..\extdeps\SDL2-2.0.20-win32-x64\**" CopyToOutputDirectory="PreserveNewest" />
     <None Condition="'$(Platform)' == 'x64'" Include="..\..\extdeps\SDL2-2.0.20-win32-x64\**" CopyToOutputDirectory="PreserveNewest" />
     <None Condition="'$(Platform)' == 'x86'" Include="..\..\extdeps\SDL2-2.0.20-win32-x86\**" CopyToOutputDirectory="PreserveNewest" />
