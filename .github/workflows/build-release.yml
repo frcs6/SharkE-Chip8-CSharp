@@ -8,7 +8,7 @@ on:
     branches: 'main'
 
 jobs:
-  build:
+  build-monogame:
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
@@ -40,31 +40,61 @@ jobs:
       run: dotnet test SharkE.Chip8.sln --configuration Release
       working-directory: ./src
 
-    - name: Build MonoGame artifact
+    - name: Build artifact
       env:
         Version: ${{ env.GitVersion_SemVer }}
       run: dotnet build SharkE.Chip8.MonoGame/SharkE.Chip8.MonoGame.csproj --configuration Release --output ./SharkE.Chip8.MonoGame-${{ matrix.os }}
-      working-directory: ./src      
+      working-directory: ./src
 
-    - name: Upload MonoGame artifact
+    - name: Upload artifact
       uses: actions/upload-artifact@v1
       with:
         name: SharkE.Chip8.MonoGame-${{ matrix.os }}
         path: ./src/SharkE.Chip8.MonoGame-${{ matrix.os }} 
 
-    - name: Build Sdl2 artifact
-      if: ${{ matrix.os == 'windows' }}
+  build-sdl2:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        plateform: [x86, x64]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        submodules: true
+
+    - name: Setup GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: '5.x'
+
+    - name: Execute GitVersion
+      uses: gittools/actions/gitversion/execute@v0.9.7
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:        
+        dotnet-version: |
+          3.1.x
+          6.0.x
+
+    - name: Test solution
+      run: dotnet test SharkE.Chip8.sln --configuration Release
+      working-directory: ./src
+
+    - name: Build artifact
       env:
         Version: ${{ env.GitVersion_SemVer }}
-      run: dotnet build SharkE.Chip8.Sdl2/SharkE.Chip8.Sdl2.csproj --configuration Release --output ./SharkE.Chip8.Sdl2-${{ matrix.os }}
-      working-directory: ./src      
+      run: dotnet build SharkE.Chip8.Sdl2/SharkE.Chip8.Sdl2.csproj --configuration Release -p:Platform=${{ matrix.plateform }} --output ./SharkE.Chip8.Sdl2-windows-${{ matrix.plateform }}
+      working-directory: ./src
 
-    - name: Upload Sdl2 artifact
-      if: ${{ matrix.os == 'windows' }}
+    - name: Upload artifact
       uses: actions/upload-artifact@v1
       with:
-        name: SharkE.Chip8.Sdl2-${{ matrix.os }}
-        path: ./src/SharkE.Chip8.Sdl2-${{ matrix.os }} 
+        name: SharkE.Chip8.Sdl2-windows-${{ matrix.os }}
+        path: ./src/SharkE.Chip8.Sdl2-windows-${{ matrix.os }}
 
   release:
     if: startsWith(github.ref, 'refs/tags/')
@@ -96,7 +126,7 @@ jobs:
         name: release_url
         path: release_url.txt
     
-  publish:
+  publish-monogame:
     if: startsWith(github.ref, 'refs/tags/')
     needs: release
     runs-on: ubuntu-latest
@@ -119,17 +149,17 @@ jobs:
         TAG_REF_NAME: ${{ github.ref }}
         REPOSITORY_NAME: ${{ github.repository }}
 
-    - name: Download MonoGame artifact
+    - name: Download artifact
       uses: actions/download-artifact@v1
       with:
         name: SharkE.Chip8.MonoGame-${{ matrix.os }}
         path: ./SharkE.Chip8.MonoGame-${{ matrix.os }}
 
-    - name: Zip MonoGame artifact
+    - name: Zip artifact
       run: zip -r SharkE.Chip8.MonoGame-${{ matrix.os }}.zip .
       working-directory: ./SharkE.Chip8.MonoGame-${{ matrix.os }}
 
-    - name: Upload MonoGame release
+    - name: Upload release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -139,25 +169,46 @@ jobs:
         asset_name: SharkE.Chip8.MonoGame-${{ matrix.os }}.zip
         asset_content_type: application/zip
 
-    - name: Download Sdl2 artifact
-      if: ${{ matrix.os == 'windows' }}
+  publish-sdl2:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        plateform: [x86, x64]
+
+    steps:
+    - name: Load Release URL File from release job
       uses: actions/download-artifact@v1
       with:
-        name: SharkE.Chip8.Sdl2-${{ matrix.os }}
-        path: ./SharkE.Chip8.Sdl2-${{ matrix.os }}
+        name: release_url
 
-    - name: Zip Sdl2 artifact
-      if: ${{ matrix.os == 'windows' }}
-      run: zip -r SharkE.Chip8.Sdl2-${{ matrix.os }}.zip .
-      working-directory: ./SharkE.Chip8.Sdl2-${{ matrix.os }}
+    - name: Get Release File Name & Upload URL
+      id: get_release_info
+      run: |
+        value=`cat release_url/release_url.txt`
+        echo ::set-output name=upload_url::$value
+      env:
+        TAG_REF_NAME: ${{ github.ref }}
+        REPOSITORY_NAME: ${{ github.repository }}
 
-    - name: Upload Sdl2 release
-      if: ${{ matrix.os == 'windows' }}
+    - name: Download artifact
+      uses: actions/download-artifact@v1
+      with:
+        name: SharkE.Chip8.Sdl2-windows-${{ matrix.plateform }}
+        path: ./SharkE.Chip8.Sdl2-windows-${{ matrix.plateform }}
+
+    - name: Zip artifact
+      run: zip -r SharkE.Chip8.Sdl2-windows-${{ matrix.plateform }}.zip .
+      working-directory: ./SharkE.Chip8.Sdl2-windows-${{ matrix.plateform }}
+
+    - name: Upload release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-        asset_path: ./SharkE.Chip8.Sdl2-${{ matrix.os }}/SharkE.Chip8.Sdl2-${{ matrix.os }}.zip
-        asset_name: SharkE.Chip8.Sdl2-${{ matrix.os }}.zip
+        asset_path: ./SharkE.Chip8.Sdl2-windows-${{ matrix.plateform }}/SharkE.Chip8.Sdl2-windows-${{ matrix.plateform }}.zip
+        asset_name: SharkE.Chip8.Sdl2-windows-${{ matrix.plateform }}.zip
         asset_content_type: application/zip
+
