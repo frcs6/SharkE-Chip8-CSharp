@@ -93,8 +93,8 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v1
       with:
-        name: SharkE.Chip8.Sdl2-windows-${{ matrix.os }}
-        path: ./src/SharkE.Chip8.Sdl2-windows-${{ matrix.os }}
+        name: SharkE.Chip8.Sdl2-windows-${{ matrix.plateform }}
+        path: ./src/SharkE.Chip8.Sdl2-windows-${{ matrix.plateform }}
 
   release:
     if: startsWith(github.ref, 'refs/tags/')
