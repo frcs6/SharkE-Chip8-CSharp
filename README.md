@@ -22,7 +22,7 @@ SharkE.Chip8
 
 ```
 [ESC] : Exit game
-[F6] : Change palette
+[F6] : Change theme
 [F10] : Switch full screen
 ```
 ## Keyboard
