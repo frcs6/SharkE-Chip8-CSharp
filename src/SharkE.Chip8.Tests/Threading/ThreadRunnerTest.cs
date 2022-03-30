@@ -75,19 +75,5 @@ namespace SharkE.Chip8.Tests.Threading
                 _thread2.Clock.Should().Be(0);
             }
         }
-
-        [Fact]
-        public void GivenRunner_WhenNeedSynchronize_ShouldSynchronizeThread()
-        {
-            var runner = new ThreadRunner(_frequency, new IThread[] { _thread1, _thread2 });
-
-            runner.Tick(TimeSpan.FromSeconds(1));
-
-            using (new AssertionScope())
-            {
-                _thread1.Clock.Should().Be(0);
-                _thread2.Clock.Should().Be(0);
-            }
-        }
     }
 }
