@@ -129,7 +129,6 @@
                     _v[x] -= _v[y];
                     break;
                 case 0x6:
-                    _v[0xF] =
                     _v[0xF] = (byte)(_v[x] & 0x1);
                     _v[x] >>= 1;
                     break;
