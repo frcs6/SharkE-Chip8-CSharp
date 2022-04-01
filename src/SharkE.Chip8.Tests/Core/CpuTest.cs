@@ -32,7 +32,7 @@ namespace SharkE.Chip8.Tests.Core
         [Theory]
         [InlineData("./Roms/c8_test.c8", "./Roms/c8_test.json")]
         [InlineData("./Roms/test_opcode.ch8", "./Roms/test_opcode.json")]
-        public void GivenTestRom1_WhenTick_ShouldWork(string romPath, string bufferExpectedPath)
+        public void GivenTestRom_WhenTick_ShouldWork(string romPath, string bufferExpectedPath)
         {
             var threadRunner = GetThreadRunner(romPath);
             var expectedBuffer = GetExpectedBuffer(bufferExpectedPath);
